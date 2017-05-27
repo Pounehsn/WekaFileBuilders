@@ -1,0 +1,34 @@
+after one year citation per auther/paper to 2011
+Date of first paper of an auther
+Number of papers per year for each
+Number of paper Citations per year
+Number of auther Citation per year
+Normalize number of citation to remove the effect of internet
+Number of unique coauthers
+Number of coauthers
+Number of ciattion from unique authers
+Sum of number of citations in different paper
+Number of times the name comes first or second in a paper
+Publication citation
+
+________________________________________________________________________________
+H index - Is index for author who has h papers which is used at least in h papers citations 
+G index - 
+    c1, c2, ..., cn are sorted number of citations per publication
+    cs1, cs2, ..., csn where pi is sum of citations from m1 to mi
+    Max(csi > j^2)
+Auther rank (one year, and overall) - Average citation counts per paper in period
+Productivity - (Publication / years) {
+    - Number of publication
+    - Starting year
+    - Last activive year
+}
+Coathers - number of coauthors
+{
+    - Number of coauthors 
+    - Number of unique coauthors
+}
+
+________________________________________________________________________________
+
+Authority - ???
