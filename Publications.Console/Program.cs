@@ -11,21 +11,21 @@ namespace Publications.Console
     {
         private static void Main()
         {
-            //TestReadingAuthorsAndPapers();
+            TestReadingAuthorsAndPapers();
 
-            var file = WekaFile(
-                "weather",
-                Attributes(
-                    Attr("outlook", Nom("sunny", "overcast", "rainy")),
-                    Attr("temperature", Num)
-                ),
-                Instances(
-                    Inst("sunny", "85"),
-                    Inst("sunny", "80")
-                )
-            );
+            //var file = WekaFile(
+            //    "weather",
+            //    Attributes(
+            //        Attr("outlook", Nom("sunny", "overcast", "rainy")),
+            //        Attr("temperature", Num)
+            //    ),
+            //    Instances(
+            //        Inst("sunny", "85"),
+            //        Inst("sunny", "80")
+            //    )
+            //);
 
-            System.Console.WriteLine(file);
+            //System.Console.WriteLine(file);
 
             System.Console.ReadLine();
         }
@@ -41,10 +41,12 @@ namespace Publications.Console
                 )
             );
 
-            foreach (var result in loader.ParsePapers().Select(i => i.ToString()).Take(10))
+            var papers = loader.ParsePapers();
+            
+            foreach (var paper in papers.Select(i => i.ToString()).Take(10))
             {
                 System.Console.WriteLine(new string('-', 80));
-                System.Console.WriteLine(result);
+                System.Console.WriteLine(paper);
             }
 
             foreach (var result in loader.ParseAuthor().Select(i => i.ToString()).Take(10))

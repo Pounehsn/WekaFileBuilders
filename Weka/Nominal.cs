@@ -7,10 +7,10 @@ namespace Weka
     {
         public Nominal()
         {
-            Values = new List<Id>();
+            Values = new HashSet<Id>();
         }
 
-        public List<Id> Values { get; }
+        public HashSet<Id> Values { get; }
         public override string ToString() => $"{{{string.Join(", ", Values)}}}";
     }
 }

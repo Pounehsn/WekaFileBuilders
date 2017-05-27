@@ -6,12 +6,14 @@ namespace Weka
 {
     public static class WekaDsl
     {
-        public static WekaTypeBase Nom(string arg0, string arg1, params string[] args)
+        public static WekaTypeBase Nom(string arg0, params string[] args)
         {
             var nominal = new Nominal();
             nominal.Values.Add(new Id(arg0));
-            nominal.Values.Add(new Id(arg1));
-            nominal.Values.AddRange(args.Select(i => new Id(i)));
+            foreach (var result in args.Select(i => new Id(i)))
+            {
+                nominal.Values.Add(result);
+            }
             return nominal;
         }
 
@@ -32,11 +34,11 @@ namespace Weka
         public static IEnumerable<WekaAttribute> Attributes(params WekaAttribute[] args) => args;
         public static IEnumerable<Instance> Instances(params Instance[] args) => args;
         public static WekaInputFileBuilder WekaFile(
-            string name, 
+            string relation, 
             IEnumerable<WekaAttribute> attributes,
             IEnumerable<Instance> instances)
         {
-            var file = new WekaInputFileBuilder {Relation = new Name(name)};
+            var file = new WekaInputFileBuilder {Relation = new Name(relation)};
             file.Attributes.AddRange(attributes);
             file.Data.AddRange(instances);
 
