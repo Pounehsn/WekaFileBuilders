@@ -25,8 +25,6 @@ namespace Publications.Console
             //    )
             //);
 
-            //System.Console.WriteLine(file);
-
             System.Console.ReadLine();
         }
 
