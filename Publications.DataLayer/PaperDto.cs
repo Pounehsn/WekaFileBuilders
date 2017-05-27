@@ -4,9 +4,9 @@ using Core;
 
 namespace Publications.DataLayer
 {
-    public class Paper
+    public class PaperDto
     {
-        public Paper()
+        public PaperDto()
         {
             Authors = new List<Name>();
             Citations = new List<Id>();

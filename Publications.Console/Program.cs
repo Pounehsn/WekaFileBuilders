@@ -11,7 +11,7 @@ namespace Publications.Console
     {
         private static void Main()
         {
-            TestReadingAuthorsAndPapers();
+            //TestReadingAuthorsAndPapers();
 
             //var file = WekaFile(
             //    "weather",
@@ -30,7 +30,7 @@ namespace Publications.Console
 
         private static void TestReadingAuthorsAndPapers()
         {
-            var loader = new Loader(
+            var loader = new PublicationLoader(
                 new FileInfo(
                     @"D:\Pouneh\Citation Problem\data_15403498_837706864\paper.txt"
                 ),

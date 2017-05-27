@@ -7,9 +7,9 @@ using Core;
 
 namespace Publications.DataLayer
 {
-    public class Loader
+    public class PublicationLoader
     {
-        public Loader(FileInfo paperFile, FileInfo authorFile)
+        public PublicationLoader(FileInfo paperFile, FileInfo authorFile)
         {
             if (paperFile == null) throw new ArgumentNullException(nameof(paperFile));
             if (authorFile == null) throw new ArgumentNullException(nameof(authorFile));
@@ -19,16 +19,16 @@ namespace Publications.DataLayer
         private readonly FileInfo _paperFile;
         private readonly FileInfo _authorFile;
 
-        public IEnumerable<Paper> ParsePapers() =>
+        public IEnumerable<PaperDto> ParsePapers() =>
             GetPapersString().Select(ParsPaper);
-        public IEnumerable<Author> ParseAuthor()
+        public IEnumerable<AuthorDto> ParseAuthor()
         {
             using (var file = new StreamReader(_authorFile.FullName))
             {
                 string line;
                 while ((line = file.ReadLine()) != null)
                 {
-                    var author = new Author();
+                    var author = new AuthorDto();
                     var parts = line.Split('\t');
                     author.Id = int.Parse(parts[0]);
                     author.Name = new Name(parts[1]);
@@ -56,10 +56,10 @@ namespace Publications.DataLayer
                 }
             }
         }
-        private static Paper ParsPaper(string paperText)
+        private static PaperDto ParsPaper(string paperText)
         {
             var separator = new[] { Environment.NewLine };
-            var paper = new Paper();
+            var paper = new PaperDto();
 
             var lines = paperText
                 .Split(separator, StringSplitOptions.RemoveEmptyEntries)

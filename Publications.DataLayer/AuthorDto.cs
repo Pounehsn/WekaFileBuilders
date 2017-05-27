@@ -2,7 +2,7 @@
 
 namespace Publications.DataLayer
 {
-    public class Author
+    public class AuthorDto
     {
         public int Id { get; set; }
         public Name Name { get; set; }

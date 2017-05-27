@@ -14,7 +14,7 @@ Publication citation
 ________________________________________________________________________________
 H index - Is index for author who has h papers which is used at least in h papers citations 
 G index - 
-    c1, c2, ..., cn are sorted number of citations per publication
+    c1, c2, ..., cn are sorted number of citations per paper
     cs1, cs2, ..., csn where csi is sum of citations from c1 to ci
     Max(csi > i^2)
 Auther rank (one year, and overall) - Average citation counts per paper in period
