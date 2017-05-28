@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Author.cs" />
     <Compile Include="DuplicatedIdException.cs" />
+    <Compile Include="IRelationship.cs" />
     <Compile Include="ObjectWithUniqueId.cs" />
     <Compile Include="Paper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

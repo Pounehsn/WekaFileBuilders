@@ -1,10 +1,7 @@
-﻿using System.Dynamic;
-using Publications.DataLayer;
+﻿using Publications.DataLayer;
 using System.IO;
 using System.Linq;
 using Core;
-using Weka;
-using static Weka.WekaDsl;
 using Publications.BusinessLogic;
 
 namespace Publications.Console
@@ -55,7 +52,7 @@ namespace Publications.Console
             foreach (var paperDto in loader.ParsePapers())
             {
                 if(loadedPapers++ % delta == 0)
-                    System.Console.WriteLine($"{(double)loadedPapers/numberOfPapers:F}");
+                    System.Console.WriteLine($"{(double)loadedPapers/numberOfPapers:P}");
                 var paper = Paper.GetOrCreateInstance(paperDto.Index, id => new Paper(id));
                 paper.Name = paperDto.Name;
                 paperDto.Authors.ForEach(
@@ -68,10 +65,11 @@ namespace Publications.Console
                 paper.AddYear(paperDto.Year);
             }
 
+            loadedPapers = 0;
             foreach (var paperDto in loader.ParsePapers())
             {
                 if (loadedPapers++ % delta == 0)
-                    System.Console.WriteLine($"{(double)loadedPapers / numberOfPapers:F}");
+                    System.Console.WriteLine($"{(double)loadedPapers / numberOfPapers:P}");
 
                 var paper = Paper.Get(paperDto.Index);
 

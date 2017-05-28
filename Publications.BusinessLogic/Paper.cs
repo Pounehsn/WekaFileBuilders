@@ -16,9 +16,9 @@ namespace Publications.BusinessLogic
 
         private Venue _venue;
 
-        public IEnumerable<Author> Authors => _authors;
-        public IEnumerable<Paper> CitedIn => _citers;
-        public IEnumerable<Paper> Citations => _citations;
+        public IRelationship<Author> Authors => _authors;
+        public IRelationship<Paper> CitedIn => _citers;
+        public IRelationship<Paper> Citations => _citations;
         public IEnumerable<int> Years => _years;
 
         public Name Name { get; set; }
