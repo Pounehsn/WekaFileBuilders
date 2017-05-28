@@ -6,19 +6,21 @@ namespace Publications.BusinessLogic
 {
     public class Author : ObjectWithUniqueId<Author>
     {
-        public Author(Id id, Name name) : base(id)
+        public Author(Id id, Name name, int numberOfCitations) : base(id)
         {
             Name = name;
-            nameToAuthor.Add(name, this);
+            NumberOfCitations = numberOfCitations;
+            NameToAuthor.Add(name, this);
         }
 
-        private static Dictionary<Name, Author> nameToAuthor = new Dictionary<Name, Author>();
 
+        private static readonly Dictionary<Name, Author> NameToAuthor = new Dictionary<Name, Author>();
         private readonly Relationship<Paper> _papers = new Relationship<Paper>();
 
-        public static Author GetByName(Name name) => nameToAuthor[name];
-
+        public static IEnumerable<Author> AllAuthors => NameToAuthor.Values;
+        public static Author GetByName(Name name) => NameToAuthor[name];
         public Name Name { get; }
+        public int NumberOfCitations { get; }
         public IEnumerable<Paper> Papers => _papers;
 
         public void AddPaper(Paper paper)
@@ -40,16 +42,31 @@ namespace Publications.BusinessLogic
             .TakeWhile((v, i) => v >= i * i)
             .Count();
 
-        public double AuthorRank(int startingYear, int numberOfYears) => Papers
+        public double AuthorRank(int startYear, int endYear) => Papers
             .Where(
                 paper => paper.Years.Any(
                     year =>
-                        year >= startingYear &&
-                        year < startingYear + numberOfYears
+                        year >= startYear &&
+                        year <= endYear
                 )
             )
             .Select(
                 paper => paper.Citations.Count()
+            )
+            .Average();
+
+        public double AuthorHotRank(int startYear, int endYear) => Papers
+            .Where(
+                paper => paper.Years.Any(
+                    year =>
+                        year >= startYear &&
+                        year <= endYear
+                )
+            )
+            .Select(
+                paper => paper
+                    .Citations
+                    .Count(cite => cite.Years.Min() - paper.Years.Max() <= 1)
             )
             .Average();
 
@@ -63,6 +80,9 @@ namespace Publications.BusinessLogic
             .SelectMany(paper => paper.Years)
             .Max();
 
+        public int YearsOfExperience =>
+            LastYearOfActivity - StartOfActivity + 1;
+
         public int NumberOfCoauthers => Papers
             .Sum(i => i.Authors.Count);
 
@@ -70,5 +90,6 @@ namespace Publications.BusinessLogic
             .SelectMany(i => i.Authors)
             .Distinct()
             .Count();
+        public override string ToString() => $"{{Id:{Id}, Name:{Name}, Citations:{NumberOfCitations}}}";
     }
 }

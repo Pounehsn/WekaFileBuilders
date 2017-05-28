@@ -14,7 +14,13 @@ namespace Publications.BusinessLogic
 
             _uniqueId = Objects.Count;
             Objects.Add(id, (TObject)this);
+
+            Id = id;
         }
+
+        private static readonly Dictionary<Id, TObject> Objects
+            = new Dictionary<Id, TObject>();
+        private readonly int _uniqueId;
 
         public static TObject Get(Id id) => Objects[id];
 
@@ -33,9 +39,9 @@ namespace Publications.BusinessLogic
         public static TObject GetOrCreateInstance(Id id, Func<Id, TObject> factory) =>
             Objects.ContainsKey(id) ? Objects[id] : factory(id);
 
-        private static readonly Dictionary<Id, TObject> Objects 
-            = new Dictionary<Id, TObject>();
-        private readonly int _uniqueId;
+        public static IEnumerable<TObject> GetAll() => Objects.Values;
+
+        public Id Id { get; }
 
         public int UniqueId => _uniqueId;
 
@@ -44,5 +50,7 @@ namespace Publications.BusinessLogic
         public bool Equals(TObject other) => other?._uniqueId == _uniqueId;
 
         public override int GetHashCode() => _uniqueId;
+
+        public override string ToString() => Id.ToString();
     }
 }

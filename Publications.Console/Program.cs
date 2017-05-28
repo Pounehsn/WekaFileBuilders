@@ -1,8 +1,10 @@
-﻿using Publications.DataLayer;
+﻿using System.Globalization;
+using Publications.DataLayer;
 using System.IO;
 using System.Linq;
 using Core;
 using Publications.BusinessLogic;
+using static Weka.WekaDsl;
 
 namespace Publications.Console
 {
@@ -12,18 +14,6 @@ namespace Publications.Console
         {
             //TestReadingAuthorsAndPapers();
 
-            //var file = WekaFile(
-            //    "weather",
-            //    Attributes(
-            //        Attr("outlook", Nom("sunny", "overcast", "rainy")),
-            //        Attr("temperature", Num)
-            //    ),
-            //    Instances(
-            //        Inst("sunny", "85"),
-            //        Inst("sunny", "80")
-            //    )
-            //);
-
             CreatePublicationGraph();
 
             System.Console.ReadLine();
@@ -31,28 +21,61 @@ namespace Publications.Console
 
         private static void CreatePublicationGraph()
         {
+            //var loader = new PublicationLoader(
+            //    new FileInfo(
+            //        @"D:\Pouneh\Citation Problem\data_15403498_837706864\paper.txt"
+            //    ),
+            //    new FileInfo(
+            //        @"D:\Pouneh\Citation Problem\data_15403498_837706864\author.txt"
+            //    ),
+            //    new FileInfo(
+            //        @"D:\Pouneh\Citation Problem\data_15403498_837706864\citation_train.txt"
+            //    )
+            //);
             var loader = new PublicationLoader(
                 new FileInfo(
-                    @"D:\Pouneh\Citation Problem\data_15403498_837706864\paper.txt"
+                    @"D:\Pouneh\Citation Problem\Test files\test.txt"
                 ),
                 new FileInfo(
-                    @"D:\Pouneh\Citation Problem\data_15403498_837706864\author.txt"
+                    @"D:\Pouneh\Citation Problem\Test files\Authors.txt"
+                ),
+                new FileInfo(
+                    @"D:\Pouneh\Citation Problem\Test files\Authors.txt"
                 )
             );
 
+            foreach (var authorDto in loader.ParseAuthorForTrain())
+            {
+                // ReSharper disable once UnusedVariable
+                var author = new Author(
+                    new Id(authorDto.Id.ToString()),
+                    authorDto.Name,
+                    authorDto.NumberOfCitations
+                );
+            }
             foreach (var authorDto in loader.ParseAuthor())
             {
-                var author = new Author(new Id(authorDto.Id.ToString()), authorDto.Name);
+                // ReSharper disable once UnusedVariable
+                var author = Author.GetOrCreateInstance(
+                    new Id(authorDto.Id.ToString()),
+                    id => new Author(
+                        new Id(authorDto.Id.ToString()),
+                        authorDto.Name,
+                        -1
+                    )
+                );
             }
+            System.Console.WriteLine($"Author : \n[{string.Join("\n", Author.GetAll())}]");
 
-            var numberOfPapers = loader.ParsePapers().Count();
-            System.Console.WriteLine($"Overal number of papers {numberOfPapers}");
-            var loadedPapers = 0;
-            var delta = numberOfPapers / 100;
+            var allJob = loader.ParsePapers().Count();
+            System.Console.WriteLine($"Overal number of papers {allJob}");
+            var doneJob = 0;
+            var delta = allJob / 100 == 0 ? 1 : allJob / 100;
             foreach (var paperDto in loader.ParsePapers())
             {
-                if(loadedPapers++ % delta == 0)
-                    System.Console.WriteLine($"{(double)loadedPapers/numberOfPapers:P}");
+                if (doneJob++ % delta == 0)
+                    System.Console.WriteLine($"{(double)doneJob / allJob:P}");
+
                 var paper = Paper.GetOrCreateInstance(paperDto.Index, id => new Paper(id));
                 paper.Name = paperDto.Name;
                 paperDto.Authors.ForEach(
@@ -64,12 +87,11 @@ namespace Publications.Console
                 );
                 paper.AddYear(paperDto.Year);
             }
-
-            loadedPapers = 0;
+            doneJob = 0;
             foreach (var paperDto in loader.ParsePapers())
             {
-                if (loadedPapers++ % delta == 0)
-                    System.Console.WriteLine($"{(double)loadedPapers / numberOfPapers:P}");
+                if (doneJob++ % delta == 0)
+                    System.Console.WriteLine($"{(double)doneJob / allJob:P}");
 
                 var paper = Paper.Get(paperDto.Index);
 
@@ -82,6 +104,52 @@ namespace Publications.Console
                     }
                 );
             }
+            System.Console.WriteLine($"Papers : \n[{string.Join("\n", Paper.GetAll())}]");
+
+            var authers = Author.AllAuthors;
+
+            var wekaFile = WekaFile(
+                "Publication",
+                Attributes(
+                    Attr("HIndex", Num),
+                    Attr("GIndex", Num),
+                    Attr("AutherRank", Num),
+                    Attr("AutherHotRank", Num),
+                    Attr("YearsOfExperience", Num),
+                    Attr("Productivity", Num),
+                    Attr("Coauthers", Num),
+                    Attr("UniqueCoauthers", Num),
+                    Attr("Citation", Num)
+                ),
+                authers.Where(a => a.NumberOfCitations >= 0).Select(i => Inst(GetValues(i)))
+            );
+
+            using (var file = new StreamWriter(@"D:\Pouneh\Citation Problem\data_15403498_837706864\WekaInput.arff"))
+            {
+                foreach (var fileLine in wekaFile.GetFileLines())
+                {
+                    file.WriteLine(fileLine);
+                }
+            }
+        }
+
+        private static string[] GetValues(Author author)
+        {
+            var startYear = author.StartOfActivity;
+            var endYear = author.LastYearOfActivity;
+            var yearsOfExperience = author.YearsOfExperience;
+            return new[]
+            {
+                author.HIndex.ToString(),
+                author.GIndex.ToString(),
+                $"{author.AuthorRank(startYear, endYear):F}",
+                $"{author.AuthorHotRank(startYear, endYear):F}",
+                yearsOfExperience.ToString(),
+                $"{(double)author.NumberOfPublication / yearsOfExperience:F}",
+                author.NumberOfCoauthers.ToString(CultureInfo.InvariantCulture),
+                author.NumberOfUniqueCoauthers.ToString(CultureInfo.InvariantCulture),
+                author.NumberOfCitations.ToString(CultureInfo.InvariantCulture)
+            };
         }
 
         private static void TestReadingAuthorsAndPapers()
@@ -92,6 +160,9 @@ namespace Publications.Console
                 ),
                 new FileInfo(
                     @"D:\Pouneh\Citation Problem\data_15403498_837706864\author.txt"
+                ),
+                new FileInfo(
+                    @"D:\Pouneh\Citation Problem\data_15403498_837706864\citation_train.txt"
                 )
             );
 

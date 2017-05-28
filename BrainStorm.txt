@@ -21,7 +21,7 @@ Auther rank (one year, and overall) - Average citation counts per paper in perio
 Productivity - (Publication / years) {
     - Number of publication
     - Starting year
-    - Last activive year
+    - Last active year
 }
 Coathers - number of coauthors
 {

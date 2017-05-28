@@ -2,7 +2,7 @@
 
 namespace Core
 {
-    public struct Id
+    public struct Id : IEquatable<Id>
     {
         public Id(string value)
         {
@@ -13,5 +13,13 @@ namespace Core
         public string Value { get; }
 
         public override string ToString() => Value;
+
+        public override bool Equals(object other) =>
+            other is Id && Equals((Id)other);
+
+        public bool Equals(Id other) => Value == other.Value;
+
+        public override int GetHashCode() =>
+            Value?.GetHashCode() ?? 0;
     }
 }

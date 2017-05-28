@@ -9,15 +9,17 @@ namespace Publications.DataLayer
 {
     public class PublicationLoader
     {
-        public PublicationLoader(FileInfo paperFile, FileInfo authorFile)
+        public PublicationLoader(FileInfo paperFile, FileInfo authorFile, FileInfo authorForTrainFile)
         {
             if (paperFile == null) throw new ArgumentNullException(nameof(paperFile));
             if (authorFile == null) throw new ArgumentNullException(nameof(authorFile));
             _paperFile = paperFile;
             _authorFile = authorFile;
+            _authorForTrainFile = authorForTrainFile;
         }
         private readonly FileInfo _paperFile;
         private readonly FileInfo _authorFile;
+        private readonly FileInfo _authorForTrainFile;
 
         public IEnumerable<PaperDto> ParsePapers() =>
             GetPapersString().Select(ParsPaper);
@@ -28,25 +30,52 @@ namespace Publications.DataLayer
                 string line;
                 while ((line = file.ReadLine()) != null)
                 {
-                    var author = new AuthorDto();
-                    var parts = line.Split('\t');
-                    author.Id = int.Parse(parts[0]);
-                    author.Name = new Name(parts[1]);
-                    yield return author;
+                    if (!string.IsNullOrWhiteSpace(line))
+                    {
+                        var author = new AuthorDto();
+                        var parts = line.Split('\t');
+                        author.Id = new Id(parts[0]);
+                        author.Name = new Name(parts[1]);
+                        yield return author;
+                    }
                 }
             }
-        } 
+        }
+        public IEnumerable<AuthorDto> ParseAuthorForTrain()
+        {
+            using (var file = new StreamReader(_authorForTrainFile.FullName))
+            {
+                string line;
+                while ((line = file.ReadLine()) != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(line))
+                    {
+                        var author = new AuthorDto();
+                        var parts = line.Split('\t');
+                        author.Id = new Id(parts[0]);
+                        author.Name = new Name(parts[1]);
+                        author.NumberOfCitations = int.Parse(parts[2]);
+                        yield return author;
+                    }
+                }
+            }
+        }
         private IEnumerable<string> GetPapersString()
         {
             using (var file = new StreamReader(_paperFile.FullName))
             {
                 var sb = new StringBuilder();
-                string line;
-                while ((line = file.ReadLine()) != null)
+                string t;
+                while (file.Peek()>0)
                 {
-                    if (line == string.Empty)
+                    var line = file.ReadLine();
+                    if (string.IsNullOrEmpty(line))
                     {
-                        yield return sb.ToString();
+                        t = sb.ToString();
+
+                        if (!string.IsNullOrWhiteSpace(t))
+                            yield return t;
+                        
                         sb.Clear();
                     }
                     else
@@ -54,6 +83,13 @@ namespace Publications.DataLayer
                         sb.AppendLine(line);
                     }
                 }
+
+                t = sb.ToString();
+
+                if (!string.IsNullOrWhiteSpace(t))
+                    yield return t;
+
+                sb.Clear();
             }
         }
         private static PaperDto ParsPaper(string paperText)
@@ -69,27 +105,23 @@ namespace Publications.DataLayer
             {
                 if (line.StartsWith("#*", StringComparison.OrdinalIgnoreCase))
                 {
-                    paper.Name = CreateName(line.Substring(2));
+                    paper.Name = CreateName(line.Substring(2).Trim());
                 }
                 else if (line.StartsWith("#@"))
                 {
-                    paper.Authors.AddRange(CreateAuthors(line.Substring(2)));
+                    paper.Authors.AddRange(CreateAuthors(line.Substring(2).Trim()));
                 }
                 else if (line.StartsWith("#t"))
                 {
-                    paper.Year = CreateYear(line.Substring(2));
+                    paper.Year = CreateYear(line.Substring(2).Trim());
                 }
                 else if (line.StartsWith("#c"))
                 {
-                    paper.Venue = CreateVenue(line.Substring(2));
+                    paper.Venue = CreateVenue(line.Substring(2).Trim());
                 }
                 else if (line.StartsWith("#index"))
                 {
-                    paper.Index = CreateIndex(line.Substring(6));
-                }
-                else if (line.StartsWith("#index"))
-                {
-                    paper.Index = CreateIndex(line.Substring(6));
+                    paper.Index = CreateIndex(line.Substring(6).Trim());
                 }
                 else if (line.StartsWith("#%"))
                 {

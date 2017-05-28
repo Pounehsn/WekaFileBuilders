@@ -55,5 +55,7 @@ namespace Publications.BusinessLogic
             if (_citations.Add(paper))
                 paper.AddCiter(this);
         }
+
+        public override string ToString() => $"{{Id:{Id}, Name:{Name}, Years:[{string.Join(", ",Years)}], Venue:{Venue}}}";
     }
 }
