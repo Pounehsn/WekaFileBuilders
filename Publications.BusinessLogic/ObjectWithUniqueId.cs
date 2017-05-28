@@ -4,25 +4,44 @@ using Core;
 
 namespace Publications.BusinessLogic
 {
-    public abstract class ObjectWithUniqueId : IEquatable<ObjectWithUniqueId>
+    public abstract class ObjectWithUniqueId<TObject> : IEquatable<TObject>
+        where TObject : ObjectWithUniqueId<TObject>
     {
         protected ObjectWithUniqueId(Id id)
         {
-            if (IdToIndexMap.ContainsKey(id))
+            if (Objects.ContainsKey(id))
                 throw new DuplicatedIdException($"Duplictated {GetType().Name} id '{id}' exception.");
 
-            _uniqueId = IdToIndexMap.Count;
-            IdToIndexMap.Add(id, this);
+            _uniqueId = Objects.Count;
+            Objects.Add(id, (TObject)this);
         }
 
-        public abstract ObjectWithUniqueId Create(Id id);
+        public static TObject Get(Id id) => Objects[id];
 
-        protected static readonly Dictionary<Id, ObjectWithUniqueId> IdToIndexMap = new Dictionary<Id, ObjectWithUniqueId>();
+        public static bool TryGet(Id id, out TObject o)
+        {
+            if (Objects.ContainsKey(id))
+            {
+                o = Objects[id];
+                return true;
+            }
+
+            o = null;
+            return false;
+        }
+
+        public static TObject GetOrCreateInstance(Id id, Func<Id, TObject> factory) =>
+            Objects.ContainsKey(id) ? Objects[id] : factory(id);
+
+        private static readonly Dictionary<Id, TObject> Objects 
+            = new Dictionary<Id, TObject>();
         private readonly int _uniqueId;
 
-        public override bool Equals(object obj) => (obj as ObjectWithUniqueId)?._uniqueId == _uniqueId;
+        public int UniqueId => _uniqueId;
 
-        public bool Equals(ObjectWithUniqueId other) => other?._uniqueId == _uniqueId;
+        public override bool Equals(object obj) => (obj as TObject)?._uniqueId == _uniqueId;
+
+        public bool Equals(TObject other) => other?._uniqueId == _uniqueId;
 
         public override int GetHashCode() => _uniqueId;
     }

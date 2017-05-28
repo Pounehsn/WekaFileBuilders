@@ -4,27 +4,24 @@ using Core;
 
 namespace Publications.BusinessLogic
 {
-    public class Paper : ObjectWithUniqueId
+    public class Paper : ObjectWithUniqueId<Paper>
     {
         public Paper(Id id) : base(id)
-        {
-            _authors = new Relationship<Author>();
-            _citers = new Relationship<Paper>();
-            _citations = new Relationship<Paper>();
-        }
+        { }
 
-        private readonly Relationship<Author> _authors;
-        private readonly Relationship<Paper> _citers;
-        private readonly Relationship<Paper> _citations;
+        private readonly Relationship<Author> _authors = new Relationship<Author>();
+        private readonly Relationship<Paper> _citers = new Relationship<Paper>();
+        private readonly Relationship<Paper> _citations = new Relationship<Paper>();
+        private readonly List<int> _years = new List<int>();
 
         private Venue _venue;
 
         public IEnumerable<Author> Authors => _authors;
         public IEnumerable<Paper> CitedIn => _citers;
         public IEnumerable<Paper> Citations => _citations;
+        public IEnumerable<int> Years => _years;
 
-        public string Name { get; set; }
-        public int Year { get; set; }
+        public Name Name { get; set; }
         public Venue Venue
         {
             get { return _venue; }
@@ -36,11 +33,13 @@ namespace Publications.BusinessLogic
                 if (Equals(_venue, value))
                     return;
 
-                _venue.AddPaper(this);
-
                 _venue = value;
+
+                _venue.AddPaper(this);
             }
         }
+
+        public void AddYear(int year) => _years.Add(year);
         public void AddAuthor(Author author)
         {
             if (_authors.Add(author))
@@ -56,8 +55,5 @@ namespace Publications.BusinessLogic
             if (_citations.Add(paper))
                 paper.AddCiter(this);
         }
-
-        public override ObjectWithUniqueId Create(Id id) => 
-            IdToIndexMap.ContainsKey(id) ? IdToIndexMap[id] : new Paper(id);
     }
 }

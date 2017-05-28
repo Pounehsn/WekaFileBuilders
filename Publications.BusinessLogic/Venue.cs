@@ -2,7 +2,7 @@
 
 namespace Publications.BusinessLogic
 {
-    public class Venue : ObjectWithUniqueId
+    public class Venue : ObjectWithUniqueId<Venue>
     {
         public Venue(Id id) : base(id)
         {
@@ -16,8 +16,5 @@ namespace Publications.BusinessLogic
             if (_papers.Add(paper))
                 paper.Venue = this;
         }
-
-        public override ObjectWithUniqueId Create(Id id) =>
-            IdToIndexMap.ContainsKey(id) ? IdToIndexMap[id] : new Venue(id);
     }
 }

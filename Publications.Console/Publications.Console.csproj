@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -53,6 +54,10 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{C90D9644-7767-4BD9-9DAC-0CE76C57C734}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Publications.BusinessLogic\Publications.BusinessLogic.csproj">
+      <Project>{98AEEB61-A804-4CC2-9BEF-02429A7ACB5A}</Project>
+      <Name>Publications.BusinessLogic</Name>
     </ProjectReference>
     <ProjectReference Include="..\Publications.DataLayer\Publications.DataLayer.csproj">
       <Project>{146f36d1-ddcd-4fe1-84ac-1630c2dae238}</Project>
