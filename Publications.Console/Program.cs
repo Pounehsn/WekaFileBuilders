@@ -21,28 +21,28 @@ namespace Publications.Console
 
         private static void CreatePublicationGraph()
         {
-            //var loader = new PublicationLoader(
-            //    new FileInfo(
-            //        @"D:\Pouneh\Citation Problem\data_15403498_837706864\paper.txt"
-            //    ),
-            //    new FileInfo(
-            //        @"D:\Pouneh\Citation Problem\data_15403498_837706864\author.txt"
-            //    ),
-            //    new FileInfo(
-            //        @"D:\Pouneh\Citation Problem\data_15403498_837706864\citation_train.txt"
-            //    )
-            //);
             var loader = new PublicationLoader(
                 new FileInfo(
-                    @"D:\Pouneh\Citation Problem\Test files\test.txt"
+                    @"D:\Pouneh\Citation Problem\data_15403498_837706864\paper.txt"
                 ),
                 new FileInfo(
-                    @"D:\Pouneh\Citation Problem\Test files\Authors.txt"
+                    @"D:\Pouneh\Citation Problem\data_15403498_837706864\author.txt"
                 ),
                 new FileInfo(
-                    @"D:\Pouneh\Citation Problem\Test files\Authors.txt"
+                    @"D:\Pouneh\Citation Problem\data_15403498_837706864\citation_train.txt"
                 )
             );
+            //var loader = new PublicationLoader(
+            //    new FileInfo(
+            //        @"D:\Pouneh\Citation Problem\Test files\test.txt"
+            //    ),
+            //    new FileInfo(
+            //        @"D:\Pouneh\Citation Problem\Test files\Authors.txt"
+            //    ),
+            //    new FileInfo(
+            //        @"D:\Pouneh\Citation Problem\Test files\Authors.txt"
+            //    )
+            //);
 
             foreach (var authorDto in loader.ParseAuthorForTrain())
             {
