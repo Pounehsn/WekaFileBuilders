@@ -65,7 +65,7 @@ namespace Publications.BusinessLogic
             )
             .Select(
                 paper => paper
-                    .Citations
+                    .CitedIn
                     .Count(cite => cite.Years.Min() - paper.Years.Max() <= 1)
             )
             .Average();
