@@ -65,7 +65,7 @@ namespace Publications.Console
                     )
                 );
             }
-            System.Console.WriteLine($"Author : \n[{string.Join("\n", Author.GetAll())}]");
+            //System.Console.WriteLine($"Author : \n[{string.Join("\n", Author.GetAll())}]");
 
             var allJob = loader.ParsePapers().Count();
             System.Console.WriteLine($"Overal number of papers {allJob}");
@@ -104,13 +104,14 @@ namespace Publications.Console
                     }
                 );
             }
-            System.Console.WriteLine($"Papers : \n[{string.Join("\n", Paper.GetAll())}]");
+            //System.Console.WriteLine($"Papers : \n[{string.Join("\n", Paper.GetAll())}]");
 
             var authers = Author.AllAuthors;
 
             var wekaFile = WekaFile(
                 "Publication",
                 Attributes(
+                    Attr("Id", Num),
                     Attr("HIndex", Num),
                     Attr("GIndex", Num),
                     Attr("AutherRank", Num),
@@ -140,6 +141,7 @@ namespace Publications.Console
             var yearsOfExperience = author.YearsOfExperience;
             return new[]
             {
+                author.Id.ToString(),
                 author.HIndex.ToString(),
                 author.GIndex.ToString(),
                 $"{author.AuthorRank(startYear, endYear):F}",

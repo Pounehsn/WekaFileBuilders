@@ -31,15 +31,15 @@ namespace Publications.BusinessLogic
 
         public int HIndex => Papers
             .Select(i => i.CitedIn.Count)
-            .OrderBy(i => i)
-            .TakeWhile((v, i) => v >= i)
+            .OrderByDescending(i => i)
+            .TakeWhile((v, i) => v >= i + 1)
             .Count();
 
         public int GIndex => Papers
             .Select(i => i.CitedIn.Count)
-            .OrderBy(i => i)
+            .OrderByDescending(i => i)
             .SumSequence()
-            .TakeWhile((v, i) => v >= i * i)
+            .TakeWhile((v, i) => v >= (i + 1) * (i + 1))
             .Count();
 
         public double AuthorRank(int startYear, int endYear) => Papers
@@ -51,7 +51,7 @@ namespace Publications.BusinessLogic
                 )
             )
             .Select(
-                paper => paper.Citations.Count()
+                paper => paper.CitedIn.Count()
             )
             .Average();
 
@@ -84,12 +84,12 @@ namespace Publications.BusinessLogic
             LastYearOfActivity - StartOfActivity + 1;
 
         public int NumberOfCoauthers => Papers
-            .Sum(i => i.Authors.Count);
+            .Sum(i => i.Authors.Count - 1);
 
         public int NumberOfUniqueCoauthers => Papers
             .SelectMany(i => i.Authors)
             .Distinct()
-            .Count();
+            .Count() - 1;
         public override string ToString() => $"{{Id:{Id}, Name:{Name}, Citations:{NumberOfCitations}}}";
     }
 }
