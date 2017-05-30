@@ -70,6 +70,10 @@ namespace Publications.BusinessLogic
             )
             .Average();
 
+        public int NumberOfCitationsInYear(int year) => Papers
+            .SelectMany(i => i.CitedIn)
+            .Count(i => i.Years.Contains(year));
+
         public int NumberOfPublication => Papers.Count();
 
         public int StartOfActivity => Papers
