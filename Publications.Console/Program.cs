@@ -23,13 +23,13 @@ namespace Publications.Console
         {
             var loader = new PublicationLoader(
                 new FileInfo(
-                    @"D:\Pouneh\Citation Problem\data_15403498_837706864\paper.txt"
+                    @"C:\Pouneh\Education\Tsinghua\Machine Learning\HW3\Data\paper.txt"
                 ),
                 new FileInfo(
-                    @"D:\Pouneh\Citation Problem\data_15403498_837706864\author.txt"
+                    @"C:\Pouneh\Education\Tsinghua\Machine Learning\HW3\Data\author.txt"
                 ),
                 new FileInfo(
-                    @"D:\Pouneh\Citation Problem\data_15403498_837706864\citation_train.txt"
+                    @"C:\Pouneh\Education\Tsinghua\Machine Learning\HW3\Data\citation_train.txt"
                 )
             );
             //var loader = new PublicationLoader(
@@ -118,6 +118,7 @@ namespace Publications.Console
                     Attr("AutherHotRank", Num),
                     Attr("YearsOfExperience", Num),
                     Attr("IdleYearsBefore2011", Num),
+                    Attr("NumberOfPublication", Num),
                     Attr("Productivity", Num),
                     Attr("Coauthers", Num),
                     Attr("UniqueCoauthers", Num),
@@ -133,9 +134,11 @@ namespace Publications.Console
                     Attr("Citation2009", Num),
                     Attr("Citation2010", Num),
                     Attr("Citation2011", Num),
-                    Attr("Citation", Num)
+                    Attr("TotalFirstYearCitationsUntil2011", Num),
+                    Attr("TotalCitationUntil2011", Num),
+                    Attr("CitationOn2016", Num)
                 ),
-                authers.Where(a => a.NumberOfCitations >= 0).Select(i => Inst(GetValues(i)))
+                authers.Where(a => a.NumberOfCitationsOn2016 >= 0).Select(i => Inst(GetValues(i)))
             );
 
             using (var file = new StreamWriter(@"D:\Pouneh\Citation Problem\data_15403498_837706864\WekaInput.arff"))
@@ -161,6 +164,7 @@ namespace Publications.Console
                 $"{author.AuthorHotRank(startYear, endYear):F}",
                 yearsOfExperience.ToString(),
                 (2011 - endYear).ToString(),
+                author.NumberOfPublication.ToString(),
                 $"{(double)author.NumberOfPublication / yearsOfExperience:F}",
                 author.NumberOfCoauthers.ToString(CultureInfo.InvariantCulture),
                 author.NumberOfUniqueCoauthers.ToString(CultureInfo.InvariantCulture),
@@ -176,7 +180,9 @@ namespace Publications.Console
                 author.NumberOfCitationsInYear(2009).ToString(CultureInfo.InvariantCulture),
                 author.NumberOfCitationsInYear(2010).ToString(CultureInfo.InvariantCulture),
                 author.NumberOfCitationsInYear(2011).ToString(CultureInfo.InvariantCulture),
-                author.NumberOfCitations.ToString(CultureInfo.InvariantCulture)
+                author.TotalFirstYearCitationsUntil(2011).ToString(CultureInfo.InvariantCulture),
+                author.TotalCitationsUntil(2011).ToString(CultureInfo.InvariantCulture),
+                author.NumberOfCitationsOn2016.ToString(CultureInfo.InvariantCulture)
             };
         }
 

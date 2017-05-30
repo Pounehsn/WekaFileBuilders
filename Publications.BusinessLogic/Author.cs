@@ -9,7 +9,7 @@ namespace Publications.BusinessLogic
         public Author(Id id, Name name, int numberOfCitations) : base(id)
         {
             Name = name;
-            NumberOfCitations = numberOfCitations;
+            NumberOfCitationsOn2016 = numberOfCitations;
             NameToAuthor.Add(name, this);
         }
 
@@ -20,7 +20,7 @@ namespace Publications.BusinessLogic
         public static IEnumerable<Author> AllAuthors => NameToAuthor.Values;
         public static Author GetByName(Name name) => NameToAuthor[name];
         public Name Name { get; }
-        public int NumberOfCitations { get; }
+        public int NumberOfCitationsOn2016 { get; }
         public IEnumerable<Paper> Papers => _papers;
 
         public void AddPaper(Paper paper)
@@ -73,6 +73,23 @@ namespace Publications.BusinessLogic
         public int NumberOfCitationsInYear(int year) => Papers
             .SelectMany(i => i.CitedIn)
             .Count(i => i.Years.Contains(year));
+        
+        public int TotalCitationsUntil(int year) => Papers
+            .SelectMany(i => i.CitedIn)
+            .Count(i => i.Years.Any( y => y <= year));
+
+        public double TotalFirstYearCitationsUntil(int year) => Papers
+            .Select(
+                paper => paper
+                    .CitedIn
+                    .Count(
+                        cite => {
+                            var minCitedYear = cite.Years.Min();
+                            return minCitedYear <= year && (minCitedYear - paper.Years.Max()) <= 1;
+                        }
+                    )
+            )
+            .Sum();
 
         public int NumberOfPublication => Papers.Count();
 
@@ -94,6 +111,6 @@ namespace Publications.BusinessLogic
             .SelectMany(i => i.Authors)
             .Distinct()
             .Count() - 1;
-        public override string ToString() => $"{{Id:{Id}, Name:{Name}, Citations:{NumberOfCitations}}}";
+        public override string ToString() => $"{{Id:{Id}, Name:{Name}, Citations:{NumberOfCitationsOn2016}}}";
     }
 }
