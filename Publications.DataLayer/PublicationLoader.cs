@@ -54,7 +54,9 @@ namespace Publications.DataLayer
                         var parts = line.Split('\t');
                         author.Id = new Id(parts[0]);
                         author.Name = new Name(parts[1]);
-                        author.NumberOfCitations = int.Parse(parts[2]);
+                        author.NumberOfCitations = parts.Length > 2
+                            ? int.Parse(parts[2])
+                            : 0;
                         yield return author;
                     }
                 }
@@ -66,7 +68,7 @@ namespace Publications.DataLayer
             {
                 var sb = new StringBuilder();
                 string t;
-                while (file.Peek()>0)
+                while (file.Peek() > 0)
                 {
                     var line = file.ReadLine();
                     if (string.IsNullOrEmpty(line))
@@ -75,7 +77,7 @@ namespace Publications.DataLayer
 
                         if (!string.IsNullOrWhiteSpace(t))
                             yield return t;
-                        
+
                         sb.Clear();
                     }
                     else
