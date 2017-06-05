@@ -16,8 +16,8 @@ namespace Publications.Console
             if(args==null || args.Length != 1)
                 throw new ArgumentException(
                     "Please provide the directory path, which contains " +
-                    "'itation_test.txt', " +
-                    "'itation_train.txt', " +
+                    "'citation_test.txt', " +
+                    "'citation_train.txt', " +
                     "'paper.txt', " +
                     "'author.txt'"
                 );
