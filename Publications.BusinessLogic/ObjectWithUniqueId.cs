@@ -4,7 +4,20 @@ using Core;
 
 namespace Publications.BusinessLogic
 {
-    public abstract class ObjectWithUniqueId<TObject> : IEquatable<TObject>
+    public abstract class ObjectWithUniqueId
+    {
+        protected static readonly HashSet<Action> Resets = new HashSet<Action>();
+
+        public static void ResetAll()
+        {
+            foreach (var r in Resets)
+            {
+                r();
+            }
+        }
+    }
+
+    public abstract class ObjectWithUniqueId<TObject> : ObjectWithUniqueId, IEquatable<TObject>
         where TObject : ObjectWithUniqueId<TObject>
     {
         protected ObjectWithUniqueId(Id id)
@@ -16,6 +29,11 @@ namespace Publications.BusinessLogic
             Objects.Add(id, (TObject)this);
 
             Id = id;
+        }
+
+        static ObjectWithUniqueId()
+        {
+            Resets.Add(() => Objects.Clear());
         }
 
         private static readonly Dictionary<Id, TObject> Objects

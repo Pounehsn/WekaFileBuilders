@@ -13,6 +13,10 @@ namespace Publications.BusinessLogic
             NameToAuthor.Add(name, this);
         }
 
+        static Author()
+        {
+            Resets.Add(() => NameToAuthor.Clear());
+        }
 
         private static readonly Dictionary<Name, Author> NameToAuthor = new Dictionary<Name, Author>();
         private readonly Relationship<Paper> _papers = new Relationship<Paper>();
@@ -73,17 +77,18 @@ namespace Publications.BusinessLogic
         public int NumberOfCitationsInYear(int year) => Papers
             .SelectMany(i => i.CitedIn)
             .Count(i => i.Years.Contains(year));
-        
+
         public int TotalCitationsUntil(int year) => Papers
             .SelectMany(i => i.CitedIn)
-            .Count(i => i.Years.Any( y => y <= year));
+            .Count(i => i.Years.Any(y => y <= year));
 
         public double TotalFirstYearCitationsUntil(int year) => Papers
             .Select(
                 paper => paper
                     .CitedIn
                     .Count(
-                        cite => {
+                        cite =>
+                        {
                             var minCitedYear = cite.Years.Min();
                             return minCitedYear <= year && (minCitedYear - paper.Years.Max()) <= 1;
                         }

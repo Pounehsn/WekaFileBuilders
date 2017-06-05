@@ -11,26 +11,45 @@ namespace Publications.Console
 {
     public static class Program
     {
-        private static void Main()
+        private static void Main(params string[] args)
         {
-            //TestReadingAuthorsAndPapers();
+            if(args==null || args.Length != 1)
+                throw new ArgumentException(
+                    "Please provide the directory path, which contains " +
+                    "'itation_test.txt', " +
+                    "'itation_train.txt', " +
+                    "'paper.txt', " +
+                    "'author.txt'"
+                );
+
+            baseDirectory = args[0];
 
             CreatePublicationGraph("citation_test.txt");
+            ObjectWithUniqueId.ResetAll();
             CreatePublicationGraph("citation_train.txt");
+
+            System.Console.WriteLine(
+                "'WekaInput_citation_test.txt.arff' and " +
+                "'WekaInput_citation_train.txt.arff' files " +
+                $"are copied to the {args[0]} directory."
+            );
+
             System.Console.ReadLine();
         }
+
+        private static string baseDirectory = @"D:\Pouneh\Citation Problem\data_15403498_837706864";
 
         private static void CreatePublicationGraph(string fileName)
         {
             var loader = new PublicationLoader(
                 new FileInfo(
-                    @"D:\Pouneh\Citation Problem\data_15403498_837706864\paper.txt"
+                    $@"{baseDirectory}\paper.txt"
                 ),
                 new FileInfo(
-                    @"D:\Pouneh\Citation Problem\data_15403498_837706864\author.txt"
+                    $@"{baseDirectory}\author.txt"
                 ),
                 new FileInfo(
-                    $@"D:\Pouneh\Citation Problem\data_15403498_837706864\{fileName}"
+                    $@"{baseDirectory}\{fileName}"
                 )
             );
 
@@ -122,13 +141,13 @@ namespace Publications.Console
                 "Publication",
                 Attributes(
                     Attr("Id", Num),
-                    //Attr("HIndex", Num),
+                    Attr("HIndex", Num),
                     //Attr("GIndex", Num),
-                    //Attr("AutherRank", Num),
+                    Attr("AutherRank", Num),
                     //Attr("AutherHotRank", Num),
-                    //Attr("YearsOfExperience", Num),
-                    //Attr("IdleYearsBefore2011", Num),
-                    //Attr("NumberOfPublication", Num),
+                    Attr("YearsOfExperience", Num),
+                    Attr("IdleYearsBefore2011", Num),
+                    Attr("NumberOfPublication", Num),
                     //Attr("Productivity", Num),
                     Attr("Coauthers", Num),
                     Attr("UniqueCoauthers", Num),
@@ -156,7 +175,7 @@ namespace Publications.Console
 
             using (
                 var file = new StreamWriter(
-                    $@"D:\Pouneh\Citation Problem\data_15403498_837706864\WekaInput_{fileName}.arff"
+                    $@"{baseDirectory}\WekaInput_{fileName}.arff"
                 )
             )
             {
@@ -173,19 +192,19 @@ namespace Publications.Console
             double standardDeviation
         )
         {
-            //var startYear = author.StartOfActivity;
-            //var endYear = author.LastYearOfActivity;
-            //var yearsOfExperience = author.YearsOfExperience;
+            var startYear = author.StartOfActivity;
+            var endYear = author.LastYearOfActivity;
+            var yearsOfExperience = author.YearsOfExperience;
             return new[]
             {
                 author.Id.ToString(),
-                //author.HIndex.ToString(),
+                author.HIndex.ToString(),
                 //author.GIndex.ToString(),
-                //$"{author.AuthorRank(startYear, endYear):F}",
+                $"{author.AuthorRank(startYear, endYear):F}",
                 //$"{author.AuthorHotRank(startYear, endYear):F}",
-                //yearsOfExperience.ToString(),
-                //(2011 - endYear).ToString(),
-                //author.NumberOfPublication.ToString(),
+                yearsOfExperience.ToString(),
+                (2011 - endYear).ToString(),
+                author.NumberOfPublication.ToString(),
                 //$"{(double)author.NumberOfPublication / yearsOfExperience:F}",
                 author.NumberOfCoauthers.ToString(CultureInfo.InvariantCulture),
                 author.NumberOfUniqueCoauthers.ToString(CultureInfo.InvariantCulture),
